@@ -6,8 +6,9 @@ Instructions:
 
 - [Publish OCI images](publish-oci.md)
 - [ASP.NET Core web apps](aspnetcore.md)
-- [Cross-compilation](cross-compilation.md)
+- [Dockerfile samples](dockerfile-samples.md)
 - [Publishing apps within an SDK container](publish-in-sdk-container.md)
+- [Cross-compilation](cross-compilation.md)
 - [Dynamically Adapting To Application Sizes](https://maoni0.medium.com/dynamically-adapting-to-application-sizes-2d72fcb6f1ea)
 
 ## Environment
