@@ -1,20 +1,21 @@
-## .NET Container workshop
+## .NET 8 container workshop
 
 The workshop details the fundamental workflows for using .NET with containers. It includes a variety of modalities, such [OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container), Dockerfile, [cross-compilation](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/), and [chiseled containers](https://devblogs.microsoft.com/dotnet/dotnet-6-is-now-in-ubuntu-2204/#net-in-chiseled-ubuntu-containers). OCI publish is used as the default approach.
 
 Instructions:
 
-- [.NET Console apps](dotnet.md)
+- [Publish OCI images](publish-oci.md)
 - [ASP.NET Core web apps](aspnetcore.md)
 - [Cross-compilation](cross-compilation.md)
 - [Publishing apps within an SDK container](publish-in-sdk-container.md)
+- [Dynamically Adapting To Application Sizes](https://maoni0.medium.com/dynamically-adapting-to-application-sizes-2d72fcb6f1ea)
 
 ## Environment
 
 The instructions assume:
 
-- Docker.
-- .NET 8
+- [Docker](https://docs.docker.com/engine/install/)
+- [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 The following environment was used for the examples.
 

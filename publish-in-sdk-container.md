@@ -162,7 +162,7 @@ The image can be published to a remote registry, using much the same pattern. Th
 
 - `ContainerRepository` must specify the image name plus any "org" information.
 - `ContainerRegistry` must specify the registry name, like `docker.io` or `foo.azurecr.io`.
-- Credentials must be provided to push to the registry.
+- [Credentials must be provided](https://github.com/dotnet/sdk-container-builds/blob/main/docs/RegistryAuthentication.md) to push to a registry.
 
 Credentials can be provided in two ways.
 
@@ -238,7 +238,14 @@ $ docker run -d -p 5000:5000 registry
 Publish the image and push to the local registry.
 
 ```bash
-$ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=hello-native-api -p ContainerRegistry=localhost:5000
+$ $ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=hello-native-api -p ContainerRegistry=http://localhost:5000
+MSBuild version 17.8.3+195e7f5a3 for .NET
+  Determining projects to restore...
+  Restored /source/hello-native-api.csproj (in 4.29 sec).
+/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/source/hello-native-api.csproj]
+  hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
+  hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
+/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Containers/build/Microsoft.NET.Build.Containers.targets(117,5): error CONTAINER2012: Could not recognize registry 'http://localhost:5000'. [/source/hello-native-api.csproj]
 ```
 
-This currently fails. Will look at getting guidance on how to make this work.
+This currently fails. Looks like it is due to [dotnet/sdk-container-builds #338](https://github.com/dotnet/sdk-container-builds/issues/338).
