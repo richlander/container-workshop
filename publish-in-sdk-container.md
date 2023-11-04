@@ -156,14 +156,89 @@ MSBuild version 17.8.3+195e7f5a3 for .NET
 
 The last line calls out that the image has been written to a local archive path.
 
-## Publish container image to a registry
+## Publish container image to a remote registry
 
-The image can be published to a remote, using much the same pattern. The only difference is that a fully-specied `ContainerRepository` needs to be provided.
+The image can be published to a remote registry, using much the same pattern. There are some key differences.
 
-The SDK needs credentials in order to publish
+- `ContainerRepository` must specify the image name plus any "org" information.
+- `ContainerRegistry` must specify the registry name, like `docker.io` or `foo.azurecr.io`.
+- Credentials must be provided to push to the registry.
+
+Credentials can be provided in two ways.
+
+- Pass credentials as [environment variables](https://github.com/dotnet/sdk-container-builds/issues/486).
+- Volume mount `.docker/config.json`. This approach only works in environments where credentials are left unencrypted (primarily, Linux) or via [custom-generated json file](https://github.com/dotnet/sdk-container-builds/issues/484#issuecomment-1657048065) using the same format.
+
+For this scenario, I'm going to volume mount `.docker/config.json` and login to https://hub.docker.com/.
 
 ```bash
 $ docker login -u richlander
 Password: 
 WARNING! Your password will be stored unencrypted in /home/rich/.docker/config.json.
 ```
+
+And then publish
+
+```bash
+$ docker run --rm -it -v $(pwd):/source -w /source -v /home/rich/.docker:/root/.docker mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=richlander/hello-native-api -p ContainerRegistry=docker.io
+MSBuild version 17.8.3+195e7f5a3 for .NET
+  Determining projects to restore...
+  Restored /source/hello-native-api.csproj (in 8.47 sec).
+/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/source/hello-native-api.csproj]
+  hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
+  hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
+  Building image 'richlander/hello-native-api' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot'.
+  Uploading layer 'sha256:2cf7030f21c01c0712d16119d6d7109c7cef1e5d5c24a006f771bbfdb414a865' to 'docker.io'.
+  Uploading config to registry at blob 'sha256:ac72a5f9b5ac25e091f68a400ec17c540f35a323512b4549ea229d00c3d9d415',
+  Uploaded config to registry.
+  Uploading tag 'latest' to 'docker.io'.
+  Uploaded tag 'latest' to 'docker.io'.
+  Pushed image 'richlander/hello-native-api:latest' to registry 'docker.io'.
+```
+
+I can now run the app.
+
+```bash
+ docker run --rm -it -p 8000:8080 richlander/hello-native-api
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://[::]:8080
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /app
+^Cinfo: Microsoft.Hosting.Lifetime[0]
+```
+
+And from another terminal.
+
+```bash
+$ curl http://localhost:8000/os
+{"os-description" : "Ubuntu 22.04.3 LTS"}
+```
+
+I can also access the endpoint from another machine on the same network.
+
+```bash
+$ curl http://vancouver:8000/os
+{"os-description" : "Ubuntu 22.04.3 LTS"}
+```
+
+## Publish container image to a local registry
+
+It is straightforward to host a local registry using the [`registry`](https://hub.docker.com/_/registry) image. You can then push to it using the same pattern.
+
+Launch a local registry instance
+
+```bash
+$ docker run -d -p 5000:5000 registry
+```
+
+Publish the image and push to the local registry.
+
+```bash
+$ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=hello-native-api -p ContainerRegistry=localhost:5000
+```
+
+This currently fails. Will look at getting guidance on how to make this work.
