@@ -4,6 +4,8 @@ This document demonstrates how to publish ASP.NET Core apps as container images.
 
 The following patterns rely on [OCI image publishing](publish-oci.md). This document provides a shorter set of examples, specific to web apps. See [Dockerfile samples](dockerfile-samples.md) for learning about using Dockerfiles.
 
+For ASP.NET Core and native AOT, see [Publish in SDK container](publish-in-sdk-container.md).
+
 ## Hello ASP.NET Core
 
 OCI publish is available by default for web apps. The extra package doesn't need to be installed. We'll configure the app to 
@@ -57,7 +59,7 @@ The size difference is larger for Arm64 images.
 Size can be reduced further with trimming.
 
 ```bash
-dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chiseled -p:PublishTrimmed=true --sc
+$ dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chiseled -p:PublishTrimmed=true --sc
 MSBuild version 17.8.0+6cdef4241 for .NET
   Determining projects to restore...
   Restored /home/rich/hello-aspnet/hello-aspnet.csproj (in 471 ms).
