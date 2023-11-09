@@ -1,12 +1,15 @@
 # Publishing apps as OCI images
 
-This document demonstrates how to publish .NET console apps as container images. It is part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers. 
+The easiest way to publish an app to a container image is with [.NET SDK OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container). This document demonstrates how to publish .NET console apps as container images. The [workflows for ASP.NET Core apps](aspnetcore.md) are largely the same.  These instructions are part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
 
-The following patterns rely on [OCI image publishing](https://learn.microsoft.com/dotnet/core/docker/publish-as-container). See [Dockerfile samples](dockerfile-samples.md) for learning about using Dockerfiles.
+Related:
+
+- [docker build publishing](dockerfile-samples.md)
+- [OCI image publishing property reference](publish-oci-properties.md).
 
 ## Hello dotnet
 
-The easiest way to publish an app to a container image is with .NET SDK OCI image publish. Console apps require installing a NuGet package to use OCI publish.
+The easiest way to publish an app to a container image is with .NET SDK OCI image publish. Console apps require installing a NuGet package to use OCI publish. The NuGet package isn't required for ASP.NET Core apps.
 
 Create and run app.
 
@@ -18,7 +21,13 @@ $ dotnet run
 Hello, World!
 ```
 
-Change the program:
+Add package
+
+```bash
+$ dotnet add package Microsoft.NET.Build.Containers --version 8.0.100-rc.2.23480.5
+```
+
+Change the program (so that it will print the name of the operating system):
 
 ```bash
 $ cat << EOF > Program.cs
@@ -41,13 +50,7 @@ $ dotnet run
 Hello, Ubuntu 22.04.3 LTS!
 ```
 
-Add package
-
-```bash
-$ dotnet add package Microsoft.NET.Build.Containers --version 8.0.100-rc.2.23480.5
-```
-
-Publish to OCI image and run.
+Publish to OCI image and launch a container.
 
 ```bash
 $ dotnet publish /t:PublishContainer
@@ -91,7 +94,7 @@ $ docker inspect hello-dotnet | grep User
             "User": "1654",
 ```
 
-- Debian is used in default base images -- like `8.0` -- for .NET.
+- Debian is used for default base images -- like `8.0` -- for .NET.
 - .NET 8+ images [come with a new user](https://devblogs.microsoft.com/dotnet/securing-containers-with-rootless/), app.
 - For .NET 8+ images, OCI publish sets the user to `app`.
 - The user is set via UID, as explained in [Running non-root .NET containers with Kubernetes](https://devblogs.microsoft.com/dotnet/running-nonroot-kubernetes-with-dotnet/).
@@ -105,7 +108,7 @@ $ docker run --rm anchore/syft mcr.microsoft.com/dotnet/runtime:8.0.0-rc.2 | gre
 92
 ```
 
-168 .NET components/libraries and 92 `.deb` packages are installed. 
+There are 168 .NET and 92 `.deb` packages/libraries installed. 
 
 ## Targeting Ubuntu chiseled images
 
@@ -166,11 +169,11 @@ libstdc++6                                         12.3.0-1ubuntu1~22.04     de
 zlib1g                                             1:1.2.11.dfsg-2ubuntu9.2  de
 ```
 
-168 .NET components/libraries and 7 `.deb` packages are installed.
+There are 168 .NET and 7 `.deb` packages/libraries installed. That's a dramatic reduction of Linux components.
 
 ## Targeting Alpine images
 
-The same app can be publish for Alpine. The .NET SDK (naturally) knows a lot about the app you are trying to build, including whether you are targeting `linux` (glibc) or `linux-musl` (musl libc; Alpine). That [doesn't currently affect OCI publish](https://github.com/dotnet/sdk-container-builds/issues/301), but should. If you want to target Alpine, `ContainerFamily` must be used.
+The same app can be publish for Alpine. The .NET SDK (naturally) knows a lot about the app you are trying to build, including whether you are targeting `linux` (glibc) or `linux-musl` (musl libc; Alpine). However, that [doesn't currently affect OCI publish](https://github.com/dotnet/sdk-container-builds/issues/301), but should. If you want to target Alpine, `ContainerFamily` must be used.
 
 ```bash
 $ dotnet publish /t:PublishContainer --os linux-musl /p:ContainerFamily=alpine3.18 /p:ContainerRepository=hello-musl
@@ -246,8 +249,8 @@ libgcc-s1        12.3.0-1ubuntu1~22.04     deb
 libssl3          3.0.2-0ubuntu1.10         deb   
 libstdc++6       12.3.0-1ubuntu1~22.04     deb   
 zlib1g           1:1.2.11.dfsg-2ubuntu9.2  deb
-$ docker run --rm anchore/syft mcr.microsoft.com/dotnet/runtime-deps:8.0.0-rc.2-jammy-chiseled | wc -l
-8
+$ docker run --rm anchore/syft mcr.microsoft.com/dotnet/runtime-deps:8.0.0-rc.2-jammy-chiseled | grep deb | wc -l
+7
 ```
 
 ## Moving properties to the project file
@@ -324,6 +327,8 @@ MSBuild version 17.8.0+6cdef4241 for .NET
 You will get this error if you don't have a native toolchain installed.
 
 You can install the following packges, per https://aka.ms/nativeaot-prerequisites.
+
+On Ubuntu, the following command will install the required components.
 
 ```bash
 $ sudo apt install -y clang zlib1g-dev

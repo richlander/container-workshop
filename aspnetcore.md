@@ -1,20 +1,23 @@
 # Publishing Console apps as OCI images
 
-This document demonstrates how to publish ASP.NET Core apps as container images. It is part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers. 
+The easiest way to publish an app to a container image is with [.NET SDK OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container). This document demonstrates how to publish ASP.NET console apps as container images. More general instructions are provided in [OCI image publishing property reference](publish-oci-properties.md). These instructions are part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
 
-The following patterns rely on [OCI image publishing](publish-oci.md). This document provides a shorter set of examples, specific to web apps. See [Dockerfile samples](dockerfile-samples.md) for learning about using Dockerfiles.
+Related:
 
-For ASP.NET Core and native AOT, see [Publish in SDK container](publish-in-sdk-container.md).
+- [Publishing apps as OCI images](publish-oci.md)
+- [Docker build publishing](dockerfile-samples.md)
 
 ## Hello ASP.NET Core
 
-OCI publish is available by default for web apps. The extra package doesn't need to be installed. We'll configure the app to 
+OCI publish can be enabled with the `PublishProfile` property. The `ContainerFamily` propery enables using smaller base images.
+
+Create the app and publish to an image.
 
 ```bash
 $ mkdir hello-aspnet
 $ cd hello-aspnet/
 $ dotnet new web
-$ dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chiseled
+$ dotnet publish -p PublishProfile=DefaultContainer -p ContainerFamily=jammy-chiseled
 ```
 
 Look at the image:
@@ -52,11 +55,11 @@ REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
 hello-aspnet   latest    37dbfa21c5a9   16 seconds ago   102MB
 ```
 
-The size difference is larger for Arm64 images.
+The size difference is more significant for Arm64 images.
 
 ## Trimming
 
-Size can be reduced further with trimming.
+Size can be reduced further by publishing as self-contained and using trimming.
 
 ```bash
 $ dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chiseled -p:PublishTrimmed=true --sc

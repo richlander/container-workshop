@@ -6,7 +6,7 @@ The following patterns rely on [OCI image publishing](https://learn.microsoft.co
 
 Native AOT SDK container images are used in the instructions: `mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot`.
 
-For non-native AOT use cases, a non-nightly SDK image can be used, such as `mcr.microsoft.com/dotnet/sdk:8.0-jammy`.
+For non-native AOT use cases, the smaller SDK image can be used, such as `mcr.microsoft.com/dotnet/sdk:8.0-jammy`.
 
 ## Acquire app
 
@@ -46,7 +46,7 @@ $ curl http://localhost:5099/todos
 
 ## Add new end-point
 
-An end-point that returned `RuntimeInformation.OSDescription` would be nice. It can be added to `Program.cs` 
+An end-point that returns `RuntimeInformation.OSDescription` would be nice. It can be added to `Program.cs` 
 
 ```csharp
 app.MapGet("/os", () => $$"""{"os-description" : "{{System.Runtime.InteropServices.RuntimeInformation.OSDescription}}"}{{Environment.NewLine}}""");
@@ -67,21 +67,23 @@ $ curl -s http://localhost:5099/os | jq
 
 ## Update the project file
 
-The project file should be updated to include the optimal settings (so that the CLI will remain simple). We won't need that right way.
+The project file should be updated to include the optimal settings and to avoid clutter of the command line. We won't need that right way.
+
+Add to the `PropertyGroup` section:
 
 ```xml
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot</ContainerBaseImage>
-```
-
-The SDK container we're going to use is experimental and requires a [`nuget.config`](https://gist.github.com/richlander/4a700d1679e42b7868805c0780ab173c) to work correctly.
-
-```bash
-$ curl -LO https://gist.githubusercontent.com/richlander/4a700d1679e42b7868805c0780ab173c/raw/cf3e9dccfeaa2ef33c7376d7c95c99284e83fbb3/nuget.config
+<ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot</ContainerBaseImage>
 ```
 
 ## Build bare binary locally
 
 Let's now assume that .NET 8 and `clang` are not installed locally. We can use a native AOT SDK container image. This pattern doesn't produce a container image, but is (A) uniquely useful, and (B) is a step on the way (in terms of building blocks) to producing a container image.
+
+The SDK container is experimental and requires a [`nuget.config`](https://gist.github.com/richlander/4a700d1679e42b7868805c0780ab173c) to work correctly.
+
+```bash
+$ curl -LO https://gist.githubusercontent.com/richlander/4a700d1679e42b7868805c0780ab173c/raw/cf3e9dccfeaa2ef33c7376d7c95c99284e83fbb3/nuget.config
+```
 
 Build the app, in the SDK container
 
@@ -99,7 +101,7 @@ drwxr-xr-x 2 root root     4096 Nov  3 21:03 app
 
 The app is now available locally. It's about 10MB.
 
-It can be run in a similar way
+It can be run in a similar way. It will run in a Linux environment, since the container images builds a Linux binary.
 
 ```bash
 $ ./app/hello-native-api
@@ -227,7 +229,7 @@ $ curl http://vancouver:8000/os
 
 ## Publish container image to a local registry
 
-It is straightforward to host a local registry using the [`registry`](https://hub.docker.com/_/registry) image. You can then push to it using the same pattern.
+It is possible to host a local registry using the [`registry`](https://hub.docker.com/_/registry) image. This doesn't currently work, unless a TLS certificate is used.
 
 Launch a local registry instance
 
@@ -248,4 +250,4 @@ MSBuild version 17.8.3+195e7f5a3 for .NET
 /usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Containers/build/Microsoft.NET.Build.Containers.targets(117,5): error CONTAINER2012: Could not recognize registry 'http://localhost:5000'. [/source/hello-native-api.csproj]
 ```
 
-This currently fails. Looks like it is due to [dotnet/sdk-container-builds #338](https://github.com/dotnet/sdk-container-builds/issues/338).
+This currently fails due to a lack of TLS. Looks like it is due to [dotnet/sdk-container-builds #338](https://github.com/dotnet/sdk-container-builds/issues/338).
