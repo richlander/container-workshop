@@ -13,6 +13,12 @@ Instructions:
 - [Publishing to a registry](push-to-registry.md)
 - [Dynamically Adapting To Application Sizes](https://maoni0.medium.com/dynamically-adapting-to-application-sizes-2d72fcb6f1ea)
 
+## Find this repo
+
+If you are using this repo in a talk, use this QR code to help people find the repo.
+
+![QR code to repo](container-workshop.png)
+
 ## Environment
 
 The instructions assume:
