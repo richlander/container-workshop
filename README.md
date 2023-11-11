@@ -13,6 +13,12 @@ Instructions:
 - [Publishing to a registry](push-to-registry.md)
 - [Dynamically Adapting To Application Sizes](https://maoni0.medium.com/dynamically-adapting-to-application-sizes-2d72fcb6f1ea)
 
+## Find this repo
+
+If you are using this repo in a talk, use this QR code to help people find the repo.
+
+<img width="311" alt="QR code to repo" src="https://github.com/richlander/container-workshop/assets/2608468/4067d47d-5ea3-460e-9062-0050c611ba53">
+
 ## Environment
 
 The instructions assume:
