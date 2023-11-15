@@ -11,6 +11,7 @@ Instructions:
 - [Publishing apps within an SDK container](publish-in-sdk-container.md)
 - [Cross-compilation](cross-compilation.md)
 - [Publishing to a registry](push-to-registry.md)
+- [Controlling how your containers run](./super-sql-app/control-container-runtime.md)
 - [Dynamically Adapting To Application Sizes](https://maoni0.medium.com/dynamically-adapting-to-application-sizes-2d72fcb6f1ea)
 
 ## Find this repo
