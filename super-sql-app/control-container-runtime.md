@@ -15,7 +15,6 @@ Let's publish our console application using the SDK to our local Docker engine:
 
 ```bash
 $ dotnet publish -t:PublishContainer
-dotnet publish -t:PublishContainer --os linux
 MSBuild version 17.8.3+195e7f5a3 for .NET
   Determining projects to restore...
   All projects are up-to-date for restore.
