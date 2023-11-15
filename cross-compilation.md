@@ -84,7 +84,7 @@ Add package to `dotnetapp`.
 ```bash
 $ pwd
 /home/rich/git/dotnet-docker/samples/dotnetapp
-$ dotnet add package Microsoft.NET.Build.Containers --version 8.0.100-rc.2.23480.5
+$ dotnet add package Microsoft.NET.Build.Containers --version 8.0.100
 ```
 
 Publish app for Arm64 (on x64 machine).
@@ -94,10 +94,9 @@ $ dotnet publish /t:PublishContainer -a arm64
 MSBuild version 17.8.0+6cdef4241 for .NET
   Determining projects to restore...
   Restored /home/rich/git/dotnet-docker/samples/dotnetapp/dotnetapp.csproj (in 171 ms).
-/home/rich/dotnet-rc2/sdk/8.0.100-rc.2.23502.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/home/rich/git/dotnet-docker/samples/dotnetapp/dotnetapp.csproj]
   dotnetapp -> /home/rich/git/dotnet-docker/samples/dotnetapp/bin/Release/net8.0/linux-arm64/dotnetapp.dll
   dotnetapp -> /home/rich/git/dotnet-docker/samples/dotnetapp/bin/Release/net8.0/linux-arm64/publish/
-  Building image 'dotnetapp' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:8.0.0-rc.2'.
+  Building image 'dotnetapp' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:8.0'.
   Pushed image 'dotnetapp:latest' to local registry via 'docker'.
 ```
 
@@ -122,7 +121,6 @@ MSBuild version 17.8.3+195e7f5a3 for .NET
   Determining projects to restore...
   Restored /source/releasesapi.csproj (in 12.03 sec).
 /usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Current/SolutionFile/ImportAfter/Microsoft.NET.Sdk.Solution.targets(36,5): warning NETSDK1194: The "--output" option isn't supported when building a solution. Specifying a solution-level output path results in all projects copying outputs to the same directory, which can lead to inconsistent builds. [/source/releasesapi.sln]
-/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/source/releasesapi.csproj]
   releasesapi -> /source/bin/Release/net8.0/linux-arm64/releasesapi.dll
   Generating native code
   releasesapi -> /source/app/

@@ -30,7 +30,7 @@ The following environment was used for the examples.
 
 ```bash
 $ dotnet --version
-8.0.100-rc.2.23502.2
+8.0.100
 $ docker --version
 Docker version 24.0.7, build afdd53b
 $ cat /etc/os-release | head -n 1

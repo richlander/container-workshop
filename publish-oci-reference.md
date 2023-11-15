@@ -14,7 +14,7 @@ Container publishing can be enabled with one of the following gestures:
 Console apps additionally require installing a NuGet package.
 
 ```bash
-$ dotnet add package Microsoft.NET.Build.Containers --version 8.0.100-rc.2.23480.5
+$ dotnet add package Microsoft.NET.Build.Containers --version 8.0.100
 ```
 
 ## Configure publishing
