@@ -66,11 +66,10 @@ $ dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chi
 MSBuild version 17.8.0+6cdef4241 for .NET
   Determining projects to restore...
   Restored /home/rich/hello-aspnet/hello-aspnet.csproj (in 471 ms).
-/home/rich/dotnet-rc2/sdk/8.0.100-rc.2.23502.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/home/rich/hello-aspnet/hello-aspnet.csproj]
   hello-aspnet -> /home/rich/hello-aspnet/bin/Release/net8.0/linux-x64/hello-aspnet.dll
   Optimizing assemblies for size. This process might take a while.
   hello-aspnet -> /home/rich/hello-aspnet/bin/Release/net8.0/linux-x64/publish/
-  Building image 'hello-aspnet' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime-deps:8.0.0-rc.2-jammy-chiseled'.
+  Building image 'hello-aspnet' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime-deps:8.0-jammy-chiseled'.
   Pushed image 'hello-aspnet:latest' to local registry via 'docker'.
 $ docker images hello-aspnet
 REPOSITORY     TAG       IMAGE ID       CREATED          SIZE

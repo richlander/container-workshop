@@ -149,7 +149,6 @@ $ docker run --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nigh
 MSBuild version 17.8.3+195e7f5a3 for .NET
   Determining projects to restore...
   Restored /source/hello-native-api.csproj (in 8.1 sec).
-/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/source/hello-native-api.csproj]
   hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
   hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
   Building image 'hello-native-api' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot'.
@@ -186,7 +185,6 @@ $ docker run --rm -it -v $(pwd):/source -w /source -v /home/rich/.docker:/root/.
 MSBuild version 17.8.3+195e7f5a3 for .NET
   Determining projects to restore...
   Restored /source/hello-native-api.csproj (in 8.47 sec).
-/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/source/hello-native-api.csproj]
   hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
   hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
   Building image 'richlander/hello-native-api' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot'.
@@ -244,7 +242,6 @@ $ $ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/
 MSBuild version 17.8.3+195e7f5a3 for .NET
   Determining projects to restore...
   Restored /source/hello-native-api.csproj (in 4.29 sec).
-/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.RuntimeIdentifierInference.targets(311,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [/source/hello-native-api.csproj]
   hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
   hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
 /usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Containers/build/Microsoft.NET.Build.Containers.targets(117,5): error CONTAINER2012: Could not recognize registry 'http://localhost:5000'. [/source/hello-native-api.csproj]
