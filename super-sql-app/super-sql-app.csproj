@@ -6,6 +6,7 @@
     <RootNamespace>super_sql_app</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishSelfContained>false</PublishSelfContained>
   </PropertyGroup>
 
   <ItemGroup>
