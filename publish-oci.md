@@ -32,12 +32,12 @@ Change the program (so that it will print the name of the operating system):
 $ cat << EOF > Program.cs
 > using System.Runtime.InteropServices;
 > 
-> Console.WriteLine($"Hello, {RuntimeInformation.OSDescription}!");
+> Console.WriteLine($"Hello, {RuntimeInformation.OSDescription} on {RuntimeInformation.OSArchitecture}!");
 > EOF
 $ cat Program.cs 
 using System.Runtime.InteropServices;
 
-Console.WriteLine($"Hello, {RuntimeInformation.OSDescription}!");
+Console.WriteLine($"Hello, {RuntimeInformation.OSDescription} on {RuntimeInformation.OSArchitecture}!");
 ```
 
 Note: The heredoc pattern was use to change the program. Other approaches can be used.
