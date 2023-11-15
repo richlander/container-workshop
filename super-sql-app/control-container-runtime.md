@@ -85,7 +85,9 @@ Inserted Chet as 1
 
 This works, but requires you to change your deployment.
 
-### Tell the SDK to use a root user (bugged in 8.0.100, will fix)
+### Tell the SDK to use a root user
+
+> Note - this is currently bugged in .NET SDK 8.0.100 - follow [this issue](https://github.com/dotnet/sdk-container-builds/issues/520) for details.
 
 By setting `ContainerUser` to root, you can tell the SDK explicitly to operate in a root-capable mode. You can set this via the command line or project properties:
 
@@ -98,6 +100,13 @@ MSBuild version 17.8.3+195e7f5a3 for .NET
   super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\publish\
   Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:8.0'.
   Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+```
+
+Now run the container and you should see the application successfully write to the database:
+
+```bash
+$ docker run -it --rm super-sql-app set Chet
+Inserted Chet as 1
 ```
 
 ### Change your application to react to non-root permissions
