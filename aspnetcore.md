@@ -1,4 +1,4 @@
-# Publishing Console apps as OCI images
+# Publishing ASP.NET Core apps as OCI images
 
 The easiest way to publish an app to a container image is with [.NET SDK OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container). This document demonstrates how to publish ASP.NET console apps as container images. More general instructions are provided in [OCI image publishing property reference](publish-oci-properties.md). These instructions are part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
 
