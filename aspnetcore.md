@@ -1,31 +1,20 @@
 # Publishing ASP.NET Core apps as OCI images
 
-The easiest way to publish an app to a container image is with [.NET SDK OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container). This document demonstrates how to publish ASP.NET console apps as container images. More general instructions are provided in [OCI image publishing property reference](publish-oci-properties.md). These instructions are part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
-
-Related:
-
-- [Publishing apps as OCI images](publish-oci.md)
-- [Docker build publishing](dockerfile-samples.md)
+This document demonstrates how to publish ASP.NET console apps as container images. These instructions are part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
 
 ## Hello ASP.NET Core
 
-OCI publish can be enabled with the `PublishProfile` property. The `ContainerFamily` propery enables using smaller base images.
-
-Create the app and publish to an image.
+Create the app.
 
 ```bash
-$ mkdir hello-aspnet
-$ cd hello-aspnet/
-$ dotnet new web
-$ dotnet publish -p PublishProfile=DefaultContainer -p ContainerFamily=jammy-chiseled
+dotnet new web -o hello-aspnet
+cd hello-aspnet/
 ```
 
-Look at the image:
+Publish and run the app image.
 
 ```bash
-$ docker images hello-aspnet
-REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
-hello-aspnet   latest    fd744cd2f854   9 seconds ago   109MB
+$ dotnet publish -t:PublishContainer
 $ docker run --rm -it -p 8000:8080 hello-aspnet
 info: Microsoft.Hosting.Lifetime[14]
       Now listening on: http://[::]:8080
@@ -37,19 +26,45 @@ info: Microsoft.Hosting.Lifetime[0]
       Content root path: /app
 ```
 
-In another terminal:
+In another terminal, call the endpoint with `curl`.
 
 ```bash
 $ curl http://localhost:8000
 Hello World!
 ```
 
-## Composite images (smaller)
-
-Composite images are a smaller image variant.
+Inspect the image.
 
 ```bash
-$ dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chiseled-composite
+$ docker images hello-aspnet
+REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
+hello-aspnet   latest    90bc845f23c9   8 seconds ago   217MB
+```
+
+## Using smaller base images
+
+Chiseled images can make an image much smaller without changing anything else.
+
+```bash
+$ dotnet publish -t:PublishContainer -p:ContainerFamily=jammy-chiseled-extra
+$ docker images hello-aspnet
+REPOSITORY     TAG       IMAGE ID       CREATED         SIZE
+hello-aspnet   latest    b0500047363a   8 seconds ago   147MB
+```
+
+Smaller images without globalization support can be used if `InvariantGlobalization` is used.
+
+```bash
+$ dotnet publish -t:PublishContainer -p:ContainerFamily=jammy-chiseled -p:InvariantGlobalization=true
+$ docker images hello-aspnet
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
+hello-aspnet   latest    fe3294c3dd3f   25 seconds ago   109MB
+```
+
+Composite images are a little smaller, still.
+
+```bash
+$ dotnet publish -t:PublishContainer -p:ContainerFamily=jammy-chiseled-composite -p:InvariantGlobalization=true
 $ docker images hello-aspnet
 REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
 hello-aspnet   latest    37dbfa21c5a9   16 seconds ago   102MB
@@ -59,19 +74,39 @@ The size difference is more significant for Arm64 images.
 
 ## Trimming
 
-Size can be reduced further by publishing as self-contained and using trimming.
+Size can be reduced further by publishing as self-contained and using trimming. Trimming is covered in more detail in [.NET SDK Publish Options](./publish-options.md).
+
+Project file trimming enabled:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>hello_aspnet</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <!-- Publishing properties -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <ContainerRepository>hello-aspnet-chiseled-trimmed</ContainerRepository>
+  </PropertyGroup>
+
+</Project>
+```
 
 ```bash
-$ dotnet publish -p:PublishProfile=DefaultContainer -p:ContainerFamily=jammy-chiseled -p:PublishTrimmed=true --sc
-MSBuild version 17.8.0+6cdef4241 for .NET
-  Determining projects to restore...
-  Restored /home/rich/hello-aspnet/hello-aspnet.csproj (in 471 ms).
-  hello-aspnet -> /home/rich/hello-aspnet/bin/Release/net8.0/linux-x64/hello-aspnet.dll
-  Optimizing assemblies for size. This process might take a while.
-  hello-aspnet -> /home/rich/hello-aspnet/bin/Release/net8.0/linux-x64/publish/
-  Building image 'hello-aspnet' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime-deps:8.0-jammy-chiseled'.
-  Pushed image 'hello-aspnet:latest' to local registry via 'docker'.
-$ docker images hello-aspnet
-REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
-hello-aspnet   latest    6771192894dc   11 seconds ago   40MB
+dotnet publish -t:PublishContainer
+docker run -it --rm -p 8000:8080 hello-aspnet-chiseled-trimmed
 ```
+
+Inspect image:
+
+```bash
+$ docker images hello-aspnet-chiseled-trimmed
+REPOSITORY                      TAG       IMAGE ID       CREATED         SIZE
+hello-aspnet-chiseled-trimmed   latest    339aa42a4300   2 minutes ago   39.9MB
+```
+
+Base image used: `mcr.microsoft.com/dotnet/runtime-deps:8.0-jammy-chiseled`
