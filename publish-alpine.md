@@ -104,7 +104,7 @@ Project file with `InvariantGlobalization` == `false`.
 </Project>
 ```
 
-Note: `ContainerFamily` is explicitly specified, however, `InvariantGlobalization` == `false` should make that unnecessary. Tracking: https://github.com/dotnet/sdk/issues/39315.
+Note: `ContainerFamily` is explicitly specified, however, `InvariantGlobalization` == `false` should make that unnecessary. The tracking issue for this is [dotnet/sdk#39315](https://github.com/dotnet/sdk/issues/39315).
 
 Publish and run app image.
 
