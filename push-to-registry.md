@@ -12,9 +12,9 @@ Related:
 Create an app.
 
 ```bash
-$ mkdir webapp
-$ cd webapp
-$ dotnet new web
+mkdir webapp
+cd webapp
+dotnet new web
 ```
 
 ## Login to the container registry
@@ -24,7 +24,7 @@ By default, the .NET SDK reads the same credentials as Docker Desktop.
 The following pattern is used, for Docker Hub:
 
 ```bash
-$ docker login -u richlander
+docker login -u richlander
 ```
 
 ## Publish image
@@ -32,7 +32,7 @@ $ docker login -u richlander
 The following properities (as demonstrated in the following command) can be used to build and push an image to a registry.
 
 ```bash
-$ dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=richlander/webapp -p ContainerRegistry=docker.io
+dotnet publish -t:PublishContainer -p:ContainerRepository=richlander/webapp -p:ContainerRegistry=docker.io
 ```
 
 We can then validate that presence of the image in the target registry.
