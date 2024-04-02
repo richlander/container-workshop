@@ -2,7 +2,7 @@
 
 The workshop details the fundamental workflows for using .NET with containers. It includes a variety of approaches and capabilities, such as [OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container), registry push, Dockerfile, [cross-compilation](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/), and [chiseled containers](https://devblogs.microsoft.com/dotnet/dotnet-6-is-now-in-ubuntu-2204/#net-in-chiseled-ubuntu-containers). OCI publish is used as the default approach.
 
-It assumes the use of .NET SDK `8.0.200` or later.
+The instructions assume .NET SDK 8.0.200+. See [.NET SDK version differences](./sdk-version-differences.md) to compare with .NET SDK 8.0.1xx.
 
 Instructions:
 
@@ -34,7 +34,7 @@ If you are using this repo in a talk, use this QR code to help people find the r
 The instructions assume:
 
 - [Docker](https://docs.docker.com/engine/install/)
-- [.NET SDK 8.0.200+](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET SDK 8.0.200+](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 The following environment was used for the examples.
 
