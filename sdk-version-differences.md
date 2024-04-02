@@ -6,7 +6,8 @@ The workshop instructions are written for [.NET SDK 8.0.200+](https://github.com
 
 [dotnetapp](https://github.com/dotnet/dotnet-docker/tree/main/samples/dotnetapp) is used as as the sample.
 
-With `8.0.1xx`, the [Microsoft.NET.Build.Containers](https://www.nuget.org/packages/Microsoft.NET.Build.Containers) must be added to publish an app, 
+With `8.0.1xx`, the [Microsoft.NET.Build.Containers](https://www.nuget.org/packages/Microsoft.NET.Build.Containers) package must be added to publish an app, 
+
 
 ```bash
 $ dotnet --version
@@ -88,7 +89,8 @@ MSBuild version 17.8.5+b5265ef37 for .NET
 
 ## Base image inferencing
 
-.NET SDK 8.0.200 and the `Microsoft.NET.Build.Containers` versions `8.0.200`+ includes some additional inferencing logic, for example to target Alpine. Earlier require more manual operations.
+.NET SDK 8.0.200 and the `Microsoft.NET.Build.Containers` versions `8.0.200`+ includes some additional inferencing logic, for example to target Alpine. Earlier SDKs require more manual operations.
+
 
 With the `8.0.1xx` using the `8.0.1xx` package, `ContainerFamily` must be used to target Alpine.
 
