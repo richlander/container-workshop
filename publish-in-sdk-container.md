@@ -1,21 +1,20 @@
 # Publish OCI image in SDK container
 
-This document demonstrates how to publish .NET web apps as container images, relying on .NET SDK container images. It is part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers. 
+This document demonstrates how to publish .NET web apps as container images, relying on .NET SDK container images. It is part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
 
 The following patterns rely on [OCI image publishing](https://learn.microsoft.com/dotnet/core/docker/publish-as-container). They run `dotnet publish` within an SDK container, avoiding the need to install .NET (and other dependencies) locally. This is particularly useful for native AOT, which is used in the examples. The overall pattern isn't specific to native AOT.
 
-Native AOT SDK container images are used in the instructions: `mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot`.
+Native AOT SDK container images are used in the instructions: `mcr.microsoft.com/dotnet/sdk:10.0-aot`.
 
-For non-native AOT use cases, the smaller SDK image can be used, such as `mcr.microsoft.com/dotnet/sdk:8.0-jammy`.
+For non-native AOT use cases, the smaller SDK image can be used, such as `mcr.microsoft.com/dotnet/sdk:10.0`.
 
-## Acquire app
+## Create app
 
-In the most typical case, an app would be aquired by git clone. In this example, a new AOT app will be created. If you'd rather acquire an app (and don't have one), try this one: https://github.com/dotnet/dotnet-docker/tree/main/samples/releasesapi.
+Create or use your own app.
 
 ```bash
-$ mkdir hello-native-api
-$ cd hello-native-api/
-$ dotnet new webapiaot
+$ dotnet new webapiaot -n webapi
+$ cd webapi
 ```
 
 ## Run app locally
@@ -24,15 +23,16 @@ The app can be run locally.
 
 ```bash
 $ dotnet run
+Using launch settings from /home/rich/git/container-workshop/webapi/Properties/launchSettings.json...
 Building...
 info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: http://localhost:5099
+      Now listening on: http://localhost:5069
 info: Microsoft.Hosting.Lifetime[0]
       Application started. Press Ctrl+C to shut down.
 info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Development
 info: Microsoft.Hosting.Lifetime[0]
-      Content root path: /home/rich/hello-native-api
+      Content root path: /home/rich/git/container-workshop/webapi
 ```
 
 The port on your machine will likely differ.
@@ -41,12 +41,12 @@ Call the service in another window:
 
 ```bash
 $ curl http://localhost:5099/todos
-[{"id":1,"title":"Walk the dog","dueBy":null,"isComplete":false},{"id":2,"title":"Do the dishes","dueBy":"2023-11-03","isComplete":false},{"id":3,"title":"Do the laundry","dueBy":"2023-11-04","isComplete":false},{"id":4,"title":"Clean the bathroom","dueBy":null,"isComplete":false},{"id":5,"title":"Clean the car","dueBy":"2023-11-05","isComplete":false}]
+[{"id":1,"title":"Walk the dog","dueBy":null,"isComplete":false},{"id":2,"title":"Do the dishes","dueBy":"2025-11-11","isComplete":false},{"id":3,"title":"Do the laundry","dueBy":"2025-11-12","isComplete":false},{"id":4,"title":"Clean the bathroom","dueBy":null,"isComplete":false},{"id":5,"title":"Clean the car","dueBy":"2025-11-13","isComplete":false}]
 ```
 
-## Add new end-point
+## Add new endpoint
 
-An end-point that returns `RuntimeInformation.OSDescription` would be nice. It can be added to `Program.cs` 
+An endpoint that returns `RuntimeInformation.OSDescription` would be nice. It can be added to `Program.cs` 
 
 ```csharp
 app.MapGet("/os", () => $$"""{"os-description" : "{{System.Runtime.InteropServices.RuntimeInformation.OSDescription}}"}{{Environment.NewLine}}""");
@@ -61,50 +61,33 @@ Once the app is re-run, the new end-point can be called and pretty-printed with 
 ```bash
 $ curl -s http://localhost:5099/os | jq
 {
-  "os-description": "Ubuntu 22.04.3 LTS"
+  "os-description": "Ubuntu 24.04.3 LTS"
 }
-```
-
-## Update the project file
-
-The project file should be updated to include the optimal settings and to avoid clutter of the command line. We won't need that right way.
-
-Add to the `PropertyGroup` section:
-
-```xml
-<ContainerBaseImage>mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot</ContainerBaseImage>
 ```
 
 ## Build bare binary locally
 
-Let's now assume that .NET 8 and `clang` are not installed locally. We can use a native AOT SDK container image. This pattern doesn't produce a container image, but is (A) uniquely useful, and (B) is a step on the way (in terms of building blocks) to producing a container image.
-
-The SDK container is experimental and requires a [`nuget.config`](https://gist.github.com/richlander/4a700d1679e42b7868805c0780ab173c) to work correctly.
-
-```bash
-$ curl -LO https://gist.githubusercontent.com/richlander/4a700d1679e42b7868805c0780ab173c/raw/cf3e9dccfeaa2ef33c7376d7c95c99284e83fbb3/nuget.config
-```
+The app can be build locally with the .NET SDK and [Native AOT Prerequisites](https://learn.microsoft.com/dotnet/core/deploying/native-aot/). A native AOT SDK container image can also be used, skipping the need to install other software.
 
 Build the app, in the SDK container
 
 ```bash
-$ docker run --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -o app
+$ docker run --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/sdk:10.0-aot dotnet publish -o app
 $ ls -l app
-total 31216
-drwxr-xr-x 2 root root     4096 Nov  3 21:03 app
--rw-rw-r-- 1 root root      127 Nov  3 19:38 appsettings.Development.json
--rw-rw-r-- 1 root root      151 Nov  3 19:38 appsettings.json
--rwxr-xr-x 1 root root 10473280 Nov  3 21:03 hello-native-api
--rwxr-xr-x 1 root root 21472640 Nov  3 21:03 hello-native-api.dbg
--rw-rw-r-- 1 root root      299 Nov  3 20:01 nuget.config
+total 35492
+-rw-rw-r-- 1 root root      119 Nov 11 22:09 appsettings.Development.json
+-rw-rw-r-- 1 root root      142 Nov 11 22:09 appsettings.json
+-rwxr-xr-x 1 root root 11094384 Nov 11 22:17 webapi
+-rwxr-xr-x 1 root root 25232400 Nov 11 22:17 webapi.dbg
+-rw-r--r-- 1 root root       53 Nov 11 22:17 webapi.staticwebassets.endpoints.json
 ```
 
-The app is now available locally. It's about 10MB.
+The app is now available locally. It's about 11MB.
 
 It can be run in a similar way. It will run in a Linux environment, since the container images builds a Linux binary.
 
 ```bash
-$ ./app/hello-native-api
+$ ./app/webapi
 info: Microsoft.Hosting.Lifetime[14]
       Now listening on: http://localhost:5000
 info: Microsoft.Hosting.Lifetime[0]
@@ -112,50 +95,64 @@ info: Microsoft.Hosting.Lifetime[0]
 info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Production
 info: Microsoft.Hosting.Lifetime[0]
-      Content root path: /home/rich/hello-native-api
+      Content root path: /home/rich/git/container-workshop/webapi
 ```
 
 This time, it is hosted on port `5000`.
 
 ```bash
-$ curl -s http://localhost:5000/os
-{"os-description" : "Ubuntu 22.04.3 LTS"}
+$ curl -s http://localhost:5000/os | jq
+{
+  "os-description": "Ubuntu 24.04.3 LTS"
+}
 ```
 
 ## Build a container image
 
 This pattern can be taken one step further, to build a container image. We're going to use a similar volume mounting technique, but with a [tarball archive as the output](https://github.com/dotnet/core/issues/8440#issuecomment-1743593480) using the `ContainerArchiveOutputPath` property.
 
+The project is configured to reduce app size:
+
 ```bash
-$ docker run --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerArchiveOutputPath=image/hello-native-api.tar.gz
-$ ls image/
-hello-native-api.tar.gz
-$ docker load --input image/hello-native-api.tar.gz 
-b97559ee6916: Loading layer  10.66MB/10.66MB
-Loaded image: hello-native-api:latest
-$ docker images hello-native-api
-REPOSITORY         TAG       IMAGE ID       CREATED         SIZE
-hello-native-api   latest    caf8cdaf5e79   2 minutes ago   42.7MB
+$ cat webapi.csproj 
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishAot>true</PublishAot>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+  </ItemGroup>
+  
+</Project>
+```
+
+The image can now be built.
+
+```bash
+$ docker run --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/sdk:10.0-aot dotnet publish -t:PublishContainer -p:ContainerArchiveOutputPath=/source/image/webapi.tar.gz
+$ ls image
+webapi.tar.gz
+$ docker load --input image/webapi.tar.gz
+4242a3dfb5a3: Loading layer  5.237MB/5.237MB
+The image webapi:latest already exists, renaming the old one with ID sha256:8e53bf4aed18d85e7a2383ec249cb0ff4c93489ecdaad4d176f6cf9973c89853 to empty string
+Loaded image: webapi:latest
+$ docker images webapi
+REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+webapi       latest    765151dbe0af   4 minutes ago   25MB
 ```
 
 That worked. The image was published inside a container image, written to the local machine via a volume mount, and then loaded into the local docker cache via `docker load`.
 
-The difference in size is that the 10MB value is compressed and the 42MB value is uncompressed.
-
-The publish command should look like:
-
-```bash
-$ docker run --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerArchiveOutputPath=image/hello-native-api.tar.gz
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  Restored /source/hello-native-api.csproj (in 8.1 sec).
-  hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
-  hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
-  Building image 'hello-native-api' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot'.
-  Pushed image 'hello-native-api:latest' to local archive at '/source/image/hello-native-api.tar.gz'.
-```
-
-The last line calls out that the image has been written to a local archive path.
+There are two sizes listed above. The tarball is compressed and the container image is not.
 
 ## Publish container image to a remote registry
 
@@ -178,51 +175,24 @@ Password:
 WARNING! Your password will be stored unencrypted in /home/rich/.docker/config.json.
 ```
 
-And then publish
+And then publish, volume mounting the app directory and docker credentials:
 
 ```bash
-$ docker run --rm -it -v $(pwd):/source -w /source -v /home/rich/.docker:/root/.docker mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=richlander/hello-native-api -p ContainerRegistry=docker.io
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  Restored /source/hello-native-api.csproj (in 8.47 sec).
-  hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
-  hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
-  Building image 'richlander/hello-native-api' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/nightly/runtime-deps:8.0-jammy-chiseled-aot'.
-  Uploading layer 'sha256:2cf7030f21c01c0712d16119d6d7109c7cef1e5d5c24a006f771bbfdb414a865' to 'docker.io'.
-  Uploading config to registry at blob 'sha256:ac72a5f9b5ac25e091f68a400ec17c540f35a323512b4549ea229d00c3d9d415',
-  Uploaded config to registry.
-  Uploading tag 'latest' to 'docker.io'.
-  Uploaded tag 'latest' to 'docker.io'.
-  Pushed image 'richlander/hello-native-api:latest' to registry 'docker.io'.
-```
-
-I can now run the app.
-
-```bash
- docker run --rm -it -p 8000:8080 richlander/hello-native-api
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: http://[::]:8080
-info: Microsoft.Hosting.Lifetime[0]
-      Application started. Press Ctrl+C to shut down.
-info: Microsoft.Hosting.Lifetime[0]
-      Hosting environment: Production
-info: Microsoft.Hosting.Lifetime[0]
-      Content root path: /app
-^Cinfo: Microsoft.Hosting.Lifetime[0]
-```
-
-And from another terminal.
-
-```bash
-$ curl http://localhost:8000/os
-{"os-description" : "Ubuntu 22.04.3 LTS"}
+$ docker run --rm -it -v $(pwd):/source -w /source -v /home/rich/.docker:/root/.docker mcr.microsoft.com/dotnet/sdk:10.0-aot dotnet publish -t:PublishContainer -p:ContainerRepository=richlander/webapi -p:ContainerRegistry=docker.io
+$ docker run --rm -d -p 8000:8080 richlander/webapi
+$ curl -s http://localhost:8000/os | jq
+{
+  "os-description": "Ubuntu 24.04.3 LTS"
+}
 ```
 
 I can also access the endpoint from another machine on the same network.
 
 ```bash
-$ curl http://vancouver:8000/os
-{"os-description" : "Ubuntu 22.04.3 LTS"}
+$ curl http://merritt:8000/os | jq
+{
+  "os-description": "Ubuntu 24.04.3 LTS"
+}
 ```
 
 ## Publish container image to a local registry
@@ -238,7 +208,7 @@ $ docker run -d -p 5000:5000 registry
 Publish the image and push to the local registry.
 
 ```bash
-$ $ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/nightly/sdk:8.0-jammy-aot dotnet publish -p PublishProfile=DefaultContainer -p ContainerRepository=hello-native-api -p ContainerRegistry=http://localhost:5000
+$ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/sdk:10.0-aot dotnet publish -t:PublishContainer -p:ContainerRepository=webapi -p ContainerRegistry=http://localhost:5000
 MSBuild version 17.8.3+195e7f5a3 for .NET
   Determining projects to restore...
   Restored /source/hello-native-api.csproj (in 4.29 sec).

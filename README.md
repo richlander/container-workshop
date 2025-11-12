@@ -1,4 +1,4 @@
-# .NET 8 container workshop
+# .NET 10 container workshop
 
 The workshop details the fundamental workflows for using .NET with containers. It includes a variety of approaches and capabilities, such as [OCI image publish](https://learn.microsoft.com/dotnet/core/docker/publish-as-container), registry push, Dockerfile, [cross-compilation](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/), and [chiseled containers](https://devblogs.microsoft.com/dotnet/dotnet-6-is-now-in-ubuntu-2204/#net-in-chiseled-ubuntu-containers). OCI publish is used as the default approach.
 

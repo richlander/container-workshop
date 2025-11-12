@@ -6,7 +6,7 @@ We have a set of useful samples at [dotnet/dotnet-docker](https://github.com/dot
 
 ## dotnetapp
 
-This sample demonstrates how to build a console app.
+[dotnetapp](https://github.com/dotnet/dotnet-docker/tree/main/samples/dotnetapp) demonstrates how to build a console app.
 
 It uses a standard multi-stage build pattern with SDK and runtime images.
 
@@ -81,7 +81,7 @@ GC Hard limit %: 75
 
 ## aspnetapp
 
-This sample demonstrates how to build an ASP.NET Core app.
+[aspnetapp](https://github.com/dotnet/dotnet-docker/tree/main/samples/aspnetapp) demonstrates how to build an ASP.NET Core app.
 
 It uses a standard multi-stage build pattern with SDK and runtime images.
 
@@ -117,7 +117,7 @@ Chiseled images default to using a non-root user.
 
 ## releasesapi
 
-This app is a service and is configured to use native AOT.
+[releasesapi](https://github.com/dotnet/dotnet-docker/tree/main/samples/releasesapi) is a service and is configured to use native AOT.
 
 It uses a standard multi-stage build pattern with SDK and runtime AOT images.
 
@@ -208,7 +208,7 @@ $ curl -s http://localhost:8000/releases | jq
 
 ## GlobalApp
 
-This app relies on globalization data.
+[globalapp](https://github.com/dotnet/dotnet-docker/tree/main/samples/globalapp) relies on globalization data.
 
 Build the app.
 

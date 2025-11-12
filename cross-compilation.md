@@ -1,6 +1,6 @@
 # Cross-compilation
 
-This document demonstrates how to cross-compile .NET apps as container images. It is part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers. 
+This document demonstrates how to cross-compile .NET apps as container images. It is part of a [container workshop](README.md), which details fundamental workflows for using .NET in containers.
 
 The following patterns rely on a combination of [OCI image publishing](https://learn.microsoft.com/dotnet/core/docker/publish-as-container) and [Dockerfile](dockerfile-samples.md) patterns.
 
