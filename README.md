@@ -7,10 +7,7 @@ The instructions assume .NET SDK 10.0.100+.
 Instructions:
 
 - [Publish OCI images](publish-oci.md)
-- [ASP.NET Core web apps](aspnetcore.md)
-- [Target Alpine](./publish-alpine.md)
-- [Target Ubuntu Chiseled](./publish-ubuntu-chiseled.md)
-- [.NET SDK Publish Option](./publish-options.md)
+- [OCI Options](./publish-options.md)
 - [Troubleshooting](./troubleshooting.md)
 
 Advanced instructions:
@@ -21,7 +18,6 @@ Advanced instructions:
 - [Cross-compilation](cross-compilation.md)
 - [Publishing to a registry](push-to-registry.md)
 - [Controlling how your containers run](./super-sql-app/control-container-runtime.md)
-- [Dynamically Adapting To Application Sizes](https://maoni0.medium.com/dynamically-adapting-to-application-sizes-2d72fcb6f1ea)
 
 ## Find this repo
 

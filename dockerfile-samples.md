@@ -203,7 +203,6 @@ $ curl -s http://localhost:8000/releases | jq
           "releasedDaysAgo": 28,
           "releaseVersion": "10.0.0-rc.2",
           "security": true,
-....
 ```
 
 ## GlobalApp
