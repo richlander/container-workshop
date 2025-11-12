@@ -15,13 +15,12 @@ Project file:
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>hello_dotnet</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
     <!-- Publishing properties -->
-    <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSelfContained>true</PublishSelfContained>
     <ContainerFamily>jammy-chiseled-extra</ContainerFamily>
@@ -30,8 +29,6 @@ Project file:
 
 </Project>
 ```
-
-Note: The `EnableSdkContainerSupport` property is only needed for console apps. Apps that use the `Microsoft.NET.Sdk.Web` SDK (see first line project file) have this property set automatically.
 
 Publish and run the app image:
 
