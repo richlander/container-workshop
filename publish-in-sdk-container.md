@@ -197,7 +197,7 @@ $ curl http://merritt:8000/os | jq
 
 ## Publish container image to a local registry
 
-It is possible to host a local registry using the [`registry`](https://hub.docker.com/_/registry) image. This doesn't currently work, unless a TLS certificate is used.
+It is possible to host a local registry using the [`registry`](https://hub.docker.com/_/registry) image. Starting in .NET 10, the SDK can push to insecure registries so this all just works.
 
 Launch a local registry instance
 
@@ -208,13 +208,22 @@ $ docker run -d -p 5000:5000 registry
 Publish the image and push to the local registry.
 
 ```bash
-$ docker run --add-host=host.docker.internal:host-gateway --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/sdk:10.0-aot dotnet publish -t:PublishContainer -p:ContainerRepository=webapi -p ContainerRegistry=http://localhost:5000
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  Restored /source/hello-native-api.csproj (in 4.29 sec).
-  hello-native-api -> /source/bin/Release/net8.0/linux-x64/hello-native-api.dll
-  hello-native-api -> /source/bin/Release/net8.0/linux-x64/publish/
-/usr/share/dotnet/sdk/8.0.100-rtm.23523.2/Containers/build/Microsoft.NET.Build.Containers.targets(117,5): error CONTAINER2012: Could not recognize registry 'http://localhost:5000'. [/source/hello-native-api.csproj]
+$ docker run --network host --rm -it -v $(pwd):/source -w /source mcr.microsoft.com/dotnet/sdk:10.0-noble-aot dotnet publish /t PublishContainer -p ContainerRepository=hello-native-api -p ContainerRegistry=http://localhost:5000 -v d
+Restore complete (3.6s)
+    Determining projects to restore...
+    Restored /source/webapi.csproj (in 3.2 sec).
+  webapi net10.0 linux-arm64 succeeded (0.8s) → bin/Release/net10.0/linux-arm64/publish/
+  webapi net10.0 linux-arm64 succeeded (0.7s)
+    Building image 'hello-native-api' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled'.
+    [Microsoft.NET.Build.Containers.Registry] Uploading layer 'sha256:8fff930231e2b39857aa470066309894f9a8186b312da75abd92c5e5301b9cf2' to 'localhost:5000'.
+    [Microsoft.NET.Build.Containers.Registry] Uploading layer 'sha256:59e1b2e43541dd0ff74ca531df1fe5087649450193965a2684f79b3141ae6d69' to 'localhost:5000'.
+    [Microsoft.NET.Build.Containers.Registry] Uploading layer 'sha256:acb47e78e665f478f813899537c6d2f477f52bfacc85a10f80f2d0c05d2b6f6c' to 'localhost:5000'.
+    [Microsoft.NET.Build.Containers.Registry] Layer 'sha256:8fff930231e2b39857aa470066309894f9a8186b312da75abd92c5e5301b9cf2' already exists.
+    [Microsoft.NET.Build.Containers.Registry] Layer 'sha256:59e1b2e43541dd0ff74ca531df1fe5087649450193965a2684f79b3141ae6d69' already exists.
+    [Microsoft.NET.Build.Containers.Registry] Finished uploading layer 'sha256:acb47e78e665f478f813899537c6d2f477f52bfacc85a10f80f2d0c05d2b6f6c' to 'localhost:5000'.
+    [Microsoft.NET.Build.Containers.Registry] Uploading config to registry at blob 'sha256:158ad1b5881e07a92bf9f6c35e11da990fb07b6b11466d3305e7dc1eb5868d27',
+    [Microsoft.NET.Build.Containers.Registry] Uploaded config to registry.
+    [Microsoft.NET.Build.Containers.Registry] Uploading tag 'latest' to 'localhost:5000'.
+    [Microsoft.NET.Build.Containers.Registry] Uploaded tag 'latest' to 'localhost:5000'.
+    Pushed image 'hello-native-api:latest' to registry 'localhost:5000'
 ```
-
-This currently fails due to a lack of TLS. Looks like it is due to [dotnet/sdk-container-builds #338](https://github.com/dotnet/sdk-container-builds/issues/338).
