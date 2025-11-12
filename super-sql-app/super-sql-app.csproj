@@ -10,8 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Net.Build.Containers" Version="8.0.100" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />  
   </ItemGroup>
 
 </Project>

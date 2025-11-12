@@ -8,20 +8,21 @@ The .NET SDK generates container images that run in a  _rootless_ configuration 
 
 Let's take a look at how that might appear for an application that stores data in a local sqlite database.
 
-
 ## Publish the console application
 
 Let's publish our console application using the SDK to our local Docker engine:
 
 ```bash
-$ dotnet publish -t:PublishContainer
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Debug\net7.0\linux-x64\super-sql-app.dll
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Debug\net7.0\linux-x64\publish\
-  Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:7.0'.
-  Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+$ dotnet publish -t PublishContainer -v d
+Restore complete (0.3s)
+    Determining projects to restore...
+    All projects are up-to-date for restore.
+  super-sql-app net7.0 succeeded (1.1s) → bin/Release/net9.0/publish/
+  super-sql-app net7.0 succeeded (3.5s)
+    Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:7.0'.
+    Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+
+Build succeeded in 5.1s
 ```
 
 Our app is targeting .NET 7 currently. This application is a very simple storage app that either
@@ -36,26 +37,28 @@ $ docker run -it --rm super-sql-app set Chet
 Inserted Chet as 1
 ```
 
-## Update the application to .NET 8
+## Update the application to .NET 10
 
-Great, now lets update our app to target .NET 8 by updating the TargetFramework property
+Great, now lets update our app to target .NET 10 by updating the TargetFramework property
 
 ```bash
 $ grep TargetFramework super-sql-app.csproj
-TargetFramework>net8.0</TargetFramework>
+TargetFramework>net10.0</TargetFramework>
 ```
 
-Now publish (note that the .NET 8 base images are used):
+Now publish (note that the .NET 10 base images are used):
 
 ```bash
-> dotnet publish -t:PublishContainer
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\super-sql-app.dll
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\publish\
-  Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:8.0'.
-  Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+> dotnet publish -t PublishContainer -v d
+Restore complete (0.3s)
+    Determining projects to restore...
+    All projects are up-to-date for restore.
+  super-sql-app net10.0 succeeded (1.1s) → bin/Release/net10.0/publish/
+  super-sql-app net10.0 succeeded (3.5s)
+    Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:10.0'.
+    Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+
+Build succeeded in 5.1s
 ```
 
 and run:
@@ -68,12 +71,12 @@ Unhandled exception. Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite 
    at Microsoft.Data.Sqlite.SqliteConnectionPool.GetConnection()
    at Microsoft.Data.Sqlite.SqliteConnectionFactory.GetConnection(SqliteConnection outerConnection)
    at Microsoft.Data.Sqlite.SqliteConnection.Open()
-   at Program.<>c__DisplayClass0_0.<<Main>$>g__EnsureTable|2() in C:\Users\chethusk\Code\container-workshop\super-sql-app\Program.cs:line 76
-   at Program.<>c__DisplayClass0_2.<<Main>$>b__4() in C:\Users\chethusk\Code\container-workshop\super-sql-app\Program.cs:line 46
-   at Program.<Main>$(String[] args) in C:\Users\chethusk\Code\container-workshop\super-sql-app\Program.cs:line 10   
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__EnsureTable|2() in /Users/chethusk/code/container-workshop/super-sql-app/Program.cs:line 76
+   at Program.<>c__DisplayClass0_2.<<Main>$>b__4() in /Users/chethusk/code/container-workshop/super-sql-app/Program.cs:line 46
+   at Program.<Main>$(String[] args) in /Users/chethusk/code/container-workshop/super-sql-app/Program.cs:line 10
 ```
 
-What happened?! In .NET 8 our container is running as nonroot and our application tries to create a sqlite database file in the application directory.  At this point we have a few options
+What happened?! In .NET 7 our container is running as nonroot and our application tries to create a sqlite database file in the application directory.  At this point we have a few options
 
 ### Run the same container and override the user via Docker
 
@@ -91,14 +94,16 @@ This works, but requires you to change your deployment.
 By setting `ContainerUser` to root, you can tell the SDK explicitly to operate in a root-capable mode. You can set this via the command line or project properties:
 
 ```bash
-$ dotnet publish -t:PublishContainer -p ContainerUser=root
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\super-sql-app.dll
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\publish\
-  Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:8.0'.
-  Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+$ dotnet publish -t PublishContainer -p ContainerUser=root -v d
+Restore complete (2.0s)
+    Determining projects to restore...
+    Restored /Users/chethusk/code/container-workshop/super-sql-app/super-sql-app.csproj (in 1.71 sec).
+  super-sql-app net10.0 succeeded (0.4s) → bin/Release/net10.0/publish/
+  super-sql-app net10.0 succeeded (5.0s)
+    Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:10.0'.
+    Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+
+Build succeeded in 7.5s
 ```
 
 Now run the container and you should see the application successfully write to the database:
@@ -119,14 +124,16 @@ var dataSource = "/home/app/hello.db";
 Now, publish the app:
 
 ```bash
-$ dotnet publish -t:PublishContainer
-MSBuild version 17.8.3+195e7f5a3 for .NET
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\super-sql-app.dll
-  super-sql-app -> C:\Users\chethusk\Code\container-workshop\super-sql-app\bin\Release\net8.0\publish\
-  Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:8.0'.
-  Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+$ dotnet publish -t PublishContainer -v d
+Restore complete (0.3s)
+    Determining projects to restore...
+    All projects are up-to-date for restore.
+  super-sql-app net10.0 succeeded (0.8s) → bin/Release/net10.0/publish/
+  super-sql-app net10.0 succeeded (2.9s)
+    Building image 'super-sql-app' with tags 'latest' on top of base image 'mcr.microsoft.com/dotnet/runtime:10.0'.
+    Pushed image 'super-sql-app:latest' to local registry via 'docker'.
+
+Build succeeded in 4.2s
 ```
 
 and run it one final time:
